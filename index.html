@@ -5,10 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tome agora! - Seu guia de saúde</title>
+    
+    <!-- Tailwind Play CDN para funcionamento imediato no preview -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    
+    <script>
+      // Configuração do Tailwind para o Play CDN (Radius 16px)
+      tailwind.config = {
+        theme: {
+          extend: {
+            borderRadius: {
+              'none': '0',
+              'sm': '0.125rem',
+              'DEFAULT': '16px',
+              'md': '16px',
+              'lg': '16px',
+              'xl': '16px',
+              '2xl': '16px',
+              '3xl': '16px',
+              'full': '9999px',
+              'custom': '16px',
+            },
+          }
+        }
+      }
+    </script>
+    
     <style>
         * {
             font-family: 'Inter', sans-serif !important;
@@ -17,23 +43,24 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             letter-spacing: -0.011em;
+            background-color: #f8fafc; /* slate-50 */
         }
-        /* Ajuste de kerning para pesos maiores (estética atual) */
         .font-black, .font-extrabold, .font-bold {
             letter-spacing: -0.022em;
         }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "recharts": "https://esm.sh/recharts@^3.6.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "recharts": "https://esm.sh/recharts@^3.6.0",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+      }
+    }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-900">
     <div id="root"></div>
