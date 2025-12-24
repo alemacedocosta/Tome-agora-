@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Pill, Plus, LogOut, Bell, Search, BellOff, CheckCircle2, Clock, CalendarClock } from 'lucide-react';
+import { Pill, Plus, LogOut, Bell, Search, BellOff, CheckCircle2, Clock, Info } from 'lucide-react';
 import { Medication, UserProfile } from './types';
 import MedicationCard from './components/MedicationCard';
 import MedicationModal from './components/MedicationModal';
 import Auth from './components/Auth';
 import { calculateNextDose, isCurrentDoseTaken } from './utils/calculations';
 import { requestNotificationPermission, sendNotification } from './utils/notifications';
+import { supabase, isSupabaseConfigured } from './utils/supabase';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null);
@@ -19,28 +20,63 @@ const App: React.FC = () => {
     typeof Notification !== 'undefined' ? Notification.permission : 'default'
   );
 
-  // Load initial state
+  // Inicialização e Monitoramento da Sessão
   useEffect(() => {
-    const savedUser = localStorage.getItem('tome_agora_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const initSession = async () => {
+      try {
+        if (isSupabaseConfigured) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session?.user) {
+            setUser({ id: session.user.id, email: session.user.email! });
+          }
+        } else {
+          // Fallback para modo Demo se as chaves não estiverem no ambiente
+          const demoUser = localStorage.getItem('tome_agora_demo_user');
+          if (demoUser) {
+            setUser(JSON.parse(demoUser));
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao carregar sessão:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initSession();
+
+    if (isSupabaseConfigured) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.user) {
+          setUser({ id: session.user.id, email: session.user.email! });
+        } else {
+          setUser(null);
+        }
+      });
+      return () => subscription.unsubscribe();
     }
-    
-    const savedMeds = localStorage.getItem('tome_agora_meds');
-    if (savedMeds) {
-      setMedications(JSON.parse(savedMeds));
-    }
-    setIsLoading(false);
   }, []);
 
-  // Save state
+  // Carregar medicamentos
   useEffect(() => {
     if (user) {
-      localStorage.setItem('tome_agora_meds', JSON.stringify(medications));
+      const savedMeds = localStorage.getItem(`tome_agora_meds_${user.id}`);
+      if (savedMeds) {
+        setMedications(JSON.parse(savedMeds));
+      } else {
+        setMedications([]);
+      }
+    }
+  }, [user]);
+
+  // Salvar medicamentos
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(`tome_agora_meds_${user.id}`, JSON.stringify(medications));
     }
   }, [medications, user]);
 
-  // Notification Check Loop
+  // Loop de Notificações
   useEffect(() => {
     if (!user || notificationPermission !== 'granted') return;
 
@@ -54,7 +90,7 @@ const App: React.FC = () => {
         if (now >= nextDose && (!lastNotified || lastNotified < nextDose)) {
           sendNotification(
             `Hora do remédio: ${med.name}`,
-            `Está na hora de tomar seu medicamento (${med.dosage_time}). Não esqueça!`
+            `Está na hora de tomar seu medicamento (${med.dosage_time}).`
           );
           hasUpdates = true;
           return { ...med, last_notified_at: now.toISOString() };
@@ -62,9 +98,7 @@ const App: React.FC = () => {
         return med;
       });
 
-      if (hasUpdates) {
-        setMedications(updatedMeds);
-      }
+      if (hasUpdates) setMedications(updatedMeds);
     };
 
     const interval = setInterval(checkNotifications, 60000); 
@@ -76,18 +110,13 @@ const App: React.FC = () => {
     setNotificationPermission(granted ? 'granted' : 'denied');
   };
 
-  const handleLogin = (email: string) => {
-    const newUser = { id: crypto.randomUUID(), email };
-    setUser(newUser);
-    localStorage.setItem('tome_agora_user', JSON.stringify(newUser));
-    requestNotificationPermission().then(granted => {
-      setNotificationPermission(granted ? 'granted' : 'denied');
-    });
-  };
-
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (isSupabaseConfigured) {
+      await supabase.auth.signOut();
+    } else {
+      localStorage.removeItem('tome_agora_demo_user');
+    }
     setUser(null);
-    localStorage.removeItem('tome_agora_user');
   };
 
   const handleSaveMedication = (data: any) => {
@@ -113,11 +142,6 @@ const App: React.FC = () => {
     setEditingMed(undefined);
   };
 
-  const handleEditRequest = (med: Medication) => {
-    setEditingMed(med);
-    setIsModalOpen(true);
-  };
-
   const handleTakeMedication = (id: string) => {
     setMedications(prev => prev.map(m => 
       m.id === id ? { ...m, last_taken_at: new Date().toISOString() } : m
@@ -130,30 +154,42 @@ const App: React.FC = () => {
     }
   };
 
-  const filteredMeds = medications.filter(m => 
-    m.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const pendingMeds = filteredMeds.filter(m => !isCurrentDoseTaken(m));
-  const takenMeds = filteredMeds.filter(m => isCurrentDoseTaken(m));
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Pill className="text-sky-500 animate-bounce" size={48} />
-          <p className="text-slate-400 font-medium">Carregando sua saúde...</p>
+          <p className="text-slate-400 font-medium">Iniciando Tome agora!...</p>
         </div>
       </div>
     );
   }
 
   if (!user) {
-    return <Auth onAuthSuccess={handleLogin} />;
+    return <Auth onAuthSuccess={(email) => {
+      // Se não houver supabase, criamos um user local para demo
+      if (!isSupabaseConfigured) {
+        const demoUser = { id: 'demo-user', email };
+        setUser(demoUser);
+        localStorage.setItem('tome_agora_demo_user', JSON.stringify(demoUser));
+      }
+    }} />;
   }
 
+  const filteredMeds = medications.filter(m => 
+    m.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  const pendingMeds = filteredMeds.filter(m => !isCurrentDoseTaken(m));
+  const takenMeds = filteredMeds.filter(m => isCurrentDoseTaken(m));
+
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 transition-colors duration-500">
+    <div className="min-h-screen bg-slate-50 pb-24">
+      {!isSupabaseConfigured && (
+        <div className="bg-amber-500 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
+          Modo de Demonstração (Dados Locais)
+        </div>
+      )}
+      
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -173,7 +209,7 @@ const App: React.FC = () => {
             >
               {notificationPermission === 'granted' ? <Bell size={20} /> : <BellOff size={20} />}
             </button>
-            <button onClick={handleLogout} className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[16px] transition-colors">
+            <button onClick={handleLogout} className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[16px] transition-colors" title="Sair">
               <LogOut size={20} />
             </button>
           </div>
@@ -184,7 +220,7 @@ const App: React.FC = () => {
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
           <div className="flex flex-col gap-1 w-full md:w-auto">
             <h2 className="text-3xl font-extrabold text-slate-900 leading-none">Minha Rotina</h2>
-            <p className="text-slate-500 font-medium">Controle seus medicamentos com precisão.</p>
+            <p className="text-slate-500 font-medium">Logado como: <span className="text-sky-600 font-bold">{user.email}</span></p>
           </div>
           
           <div className="relative w-full md:w-80 group">
@@ -199,7 +235,17 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Seção: Pendentes */}
+        {!isSupabaseConfigured && (
+          <div className="p-4 bg-amber-50 rounded-[16px] border border-amber-100 flex items-start gap-3">
+            <Info className="text-amber-500 shrink-0 mt-0.5" size={20} />
+            <div className="text-sm text-amber-800 font-medium leading-relaxed">
+              <strong>Nota de Configuração:</strong> O app não detectou as chaves do Supabase no ambiente. 
+              Você está vendo a versão funcional com armazenamento local. Para ativar o login real por e-mail, 
+              configure as chaves <code className="bg-amber-100 px-1 rounded">VITE_SUPABASE_URL</code> no Vercel.
+            </div>
+          </div>
+        )}
+
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-2 text-slate-800">
@@ -221,7 +267,7 @@ const App: React.FC = () => {
                   medication={med} 
                   onTake={handleTakeMedication}
                   onDelete={handleDeleteMedication}
-                  onEdit={handleEditRequest}
+                  onEdit={(m) => {setEditingMed(m); setIsModalOpen(true);}}
                 />
               ))}
             </div>
@@ -229,19 +275,10 @@ const App: React.FC = () => {
             <div className="flex flex-col items-center justify-center py-12 bg-white rounded-[16px] border-2 border-dashed border-slate-100">
               <CheckCircle2 size={40} className="text-green-200 mb-3" />
               <p className="text-slate-400 font-bold">Tudo em dia por aqui!</p>
-              {medications.length === 0 && (
-                <button 
-                  onClick={() => { setEditingMed(undefined); setIsModalOpen(true); }}
-                  className="mt-4 text-sky-600 font-bold hover:underline"
-                >
-                  Cadastrar meu primeiro remédio
-                </button>
-              )}
             </div>
           )}
         </section>
 
-        {/* Seção: Concluídos */}
         {takenMeds.length > 0 && (
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
@@ -263,25 +300,11 @@ const App: React.FC = () => {
                   medication={med} 
                   onTake={handleTakeMedication}
                   onDelete={handleDeleteMedication}
-                  onEdit={handleEditRequest}
+                  onEdit={(m) => {setEditingMed(m); setIsModalOpen(true);}}
                 />
               ))}
             </div>
           </section>
-        )}
-
-        {/* Empty State de Busca */}
-        {filteredMeds.length === 0 && medications.length > 0 && (
-          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[16px] border-2 border-dashed border-slate-200">
-            <Search size={40} className="text-slate-300 mb-4" />
-            <h3 className="text-xl font-bold text-slate-700">Nenhum resultado para "{searchTerm}"</h3>
-            <button 
-              onClick={() => setSearchTerm('')}
-              className="mt-4 text-sky-600 font-bold"
-            >
-              Limpar busca
-            </button>
-          </div>
         )}
       </main>
 
