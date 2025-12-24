@@ -16,12 +16,12 @@ const App: React.FC = () => {
   const [editingMed, setEditingMed] = useState<Medication | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
     typeof Notification !== 'undefined' ? Notification.permission : 'default'
   );
 
   useEffect(() => {
-    // Se o Supabase não estiver configurado, paramos o loading para mostrar a tela de erro
     if (!isSupabaseConfigured || !supabase) {
       setIsLoading(false);
       return;
@@ -77,29 +77,18 @@ const App: React.FC = () => {
     };
   }, [user]);
 
-  // TELA DE ERRO DE CONFIGURAÇÃO (Aparecerá se as env vars estiverem faltando)
+  // TELA DE ERRO APENAS SE REALMENTE FALTAR ENV VAR
   if (!isSupabaseConfigured || !supabase) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100 p-6">
-        <div className="max-w-md w-full bg-white rounded-[40px] shadow-2xl p-10 text-center space-y-6">
-          <div className="w-20 h-20 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center mx-auto">
-            <AlertTriangle size={48} />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+        <div className="max-w-md text-center space-y-4">
+          <div className="w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <AlertTriangle size={32} />
           </div>
-          <h2 className="text-2xl font-black text-slate-800">Conexão Pendente</h2>
-          <p className="text-slate-500 font-medium leading-relaxed">
-            O app não conseguiu se conectar ao Supabase. Verifique se você adicionou as seguintes variáveis no <strong>Vercel</strong>:
+          <h2 className="text-xl font-black text-slate-800 tracking-tight">Variáveis de Ambiente Ausentes</h2>
+          <p className="text-slate-500 text-sm font-medium">
+            Certifique-se de que as variáveis <strong>SUPABASE_URL</strong> e <strong>SUPABASE_ANON_KEY</strong> estão configuradas nas "Environment Variables" do seu projeto.
           </p>
-          <div className="text-left bg-slate-50 p-6 rounded-3xl text-xs font-mono space-y-3 border border-slate-100">
-            <div className="flex flex-col gap-1">
-              <span className="text-slate-400 uppercase font-bold tracking-tighter text-[10px]">Nome da Variável</span>
-              <span className="text-sky-600 font-bold">SUPABASE_URL</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-slate-400 uppercase font-bold tracking-tighter text-[10px]">Nome da Variável</span>
-              <span className="text-sky-600 font-bold">SUPABASE_ANON_KEY</span>
-            </div>
-          </div>
-          <p className="text-[10px] text-slate-400 uppercase font-black">Após salvar, faça um novo deploy.</p>
         </div>
       </div>
     );
@@ -140,7 +129,7 @@ const App: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Pill className="text-sky-500 animate-bounce" size={48} />
-          <span className="text-slate-400 font-bold animate-pulse">Sincronizando...</span>
+          <span className="text-slate-400 font-bold animate-pulse uppercase tracking-widest text-xs">Sincronizando...</span>
         </div>
       </div>
     );

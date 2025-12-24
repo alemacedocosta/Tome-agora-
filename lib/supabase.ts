@@ -2,19 +2,34 @@
 import { createClient } from '@supabase/supabase-js';
 
 /**
- * No Vercel e em ambientes modernos de deploy, o process.env.NOME_DA_VARIAVEL 
- * é substituído pelo valor real durante o tempo de build/runtime.
- * 
- * Importante: Use os nomes EXATOS configurados no painel da Vercel.
+ * Busca variáveis de ambiente de forma robusta.
+ * Tenta o objeto global process.env e verifica prefixos comuns usados por diferentes ferramentas de build.
  */
+const getEnv = (key: string): string => {
+  try {
+    // Tenta acessar via process.env (Node/Vercel/Vite/Browser-Shims)
+    const env = (window as any).process?.env || {};
+    return (
+      env[key] || 
+      env[`VITE_${key}`] || 
+      env[`NEXT_PUBLIC_${key}`] || 
+      ''
+    ).trim();
+  } catch (e) {
+    return '';
+  }
+};
 
-const supabaseUrl = (process.env.SUPABASE_URL || '').trim();
-const supabaseAnonKey = (process.env.SUPABASE_ANON_KEY || '').trim();
+const supabaseUrl = getEnv('SUPABASE_URL');
+const supabaseAnonKey = getEnv('SUPABASE_ANON_KEY');
 
-// Exporta uma flag para o App.tsx saber se deve mostrar a tela de erro de config
+// Verifica se as chaves básicas existem (tamanho mínimo para serem válidas)
 export const isSupabaseConfigured = supabaseUrl.length > 10 && supabaseAnonKey.length > 10;
 
-// Inicializa o cliente. Se não estiver configurado, o App.tsx tratará visualmente.
 export const supabase = isSupabaseConfigured 
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
+
+if (!isSupabaseConfigured) {
+  console.warn('Supabase não configurado. Verifique as variáveis SUPABASE_URL e SUPABASE_ANON_KEY.');
+}
