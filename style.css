@@ -1,4 +1,20 @@
 
+/* Estilos globais usando CSS padrão */
+* {
+  font-family: 'Inter', sans-serif !important;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+  background-color: #f8fafc;
+}
+
+.font-black, .font-extrabold, .font-bold {
+  letter-spacing: -0.022em;
+}
+
 /* Animações customizadas */
 @keyframes fade-in {
   from { opacity: 0; }
@@ -46,4 +62,9 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* Forçar arredondamento em botões e inputs se o Tailwind CDN demorar a processar */
+button, input, textarea, div.rounded-2xl, div.rounded-3xl {
+  border-radius: 16px !important;
 }
