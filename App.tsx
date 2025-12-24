@@ -157,7 +157,7 @@ const App: React.FC = () => {
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 bg-sky-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-sky-200">
+            <div className="w-10 h-10 bg-sky-600 rounded-[16px] flex items-center justify-center text-white shadow-lg shadow-sky-200">
               <Pill size={24} />
             </div>
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">Tome agora!</h1>
@@ -165,7 +165,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-2">
             <button 
               onClick={handleToggleNotifications}
-              className={`p-2.5 rounded-2xl transition-all ${
+              className={`p-2.5 rounded-[16px] transition-all ${
                 notificationPermission === 'granted' 
                   ? 'bg-sky-50 text-sky-600' 
                   : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
@@ -173,7 +173,7 @@ const App: React.FC = () => {
             >
               {notificationPermission === 'granted' ? <Bell size={20} /> : <BellOff size={20} />}
             </button>
-            <button onClick={handleLogout} className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl transition-colors">
+            <button onClick={handleLogout} className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-[16px] transition-colors">
               <LogOut size={20} />
             </button>
           </div>
@@ -192,7 +192,7 @@ const App: React.FC = () => {
             <input 
               type="text"
               placeholder="Buscar remédio..."
-              className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-[24px] outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
+              className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-[16px] outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 transition-all shadow-sm"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -203,7 +203,7 @@ const App: React.FC = () => {
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-2 text-slate-800">
-              <div className="p-2 bg-amber-100 text-amber-600 rounded-xl">
+              <div className="p-2 bg-amber-100 text-amber-600 rounded-[16px]">
                 <Clock size={20} />
               </div>
               <h3 className="text-xl font-bold">Para Tomar Agora</h3>
@@ -226,7 +226,7 @@ const App: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 bg-white rounded-[32px] border-2 border-dashed border-slate-100">
+            <div className="flex flex-col items-center justify-center py-12 bg-white rounded-[16px] border-2 border-dashed border-slate-100">
               <CheckCircle2 size={40} className="text-green-200 mb-3" />
               <p className="text-slate-400 font-bold">Tudo em dia por aqui!</p>
               {medications.length === 0 && (
@@ -246,7 +246,7 @@ const App: React.FC = () => {
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b border-slate-200 pb-4">
               <div className="flex items-center gap-2 text-slate-500">
-                <div className="p-2 bg-green-100 text-green-600 rounded-xl">
+                <div className="p-2 bg-green-100 text-green-600 rounded-[16px]">
                   <CheckCircle2 size={20} />
                 </div>
                 <h3 className="text-xl font-bold">Já Tomados</h3>
@@ -272,7 +272,7 @@ const App: React.FC = () => {
 
         {/* Empty State de Busca */}
         {filteredMeds.length === 0 && medications.length > 0 && (
-          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[40px] border-2 border-dashed border-slate-200">
+          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[16px] border-2 border-dashed border-slate-200">
             <Search size={40} className="text-slate-300 mb-4" />
             <h3 className="text-xl font-bold text-slate-700">Nenhum resultado para "{searchTerm}"</h3>
             <button 
@@ -287,7 +287,7 @@ const App: React.FC = () => {
 
       <button 
         onClick={() => { setEditingMed(undefined); setIsModalOpen(true); }}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-sky-600 text-white rounded-[24px] flex items-center justify-center shadow-2xl shadow-sky-400 hover:scale-110 active:scale-95 transition-all z-30"
+        className="fixed bottom-8 right-8 w-16 h-16 bg-sky-600 text-white rounded-[16px] flex items-center justify-center shadow-2xl shadow-sky-400 hover:scale-110 active:scale-95 transition-all z-30"
       >
         <Plus size={32} />
       </button>

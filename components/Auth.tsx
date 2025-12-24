@@ -49,14 +49,14 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
 
   return (
     <div className="min-h-screen bg-sky-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-[40px] shadow-2xl shadow-sky-200/50 p-8 sm:p-12 overflow-hidden relative">
+      <div className="max-w-md w-full bg-white rounded-[16px] shadow-2xl shadow-sky-200/50 p-8 sm:p-12 overflow-hidden relative">
         {/* Elementos Decorativos */}
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-sky-100 rounded-full blur-3xl opacity-50"></div>
         <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-indigo-100 rounded-full blur-3xl opacity-50"></div>
 
         <div className="relative z-10">
           <div className="flex flex-col items-center mb-10">
-            <div className="w-16 h-16 bg-sky-600 rounded-[24px] flex items-center justify-center text-white mb-4 shadow-xl shadow-sky-200 animate-in zoom-in duration-500">
+            <div className="w-16 h-16 bg-sky-600 rounded-[16px] flex items-center justify-center text-white mb-4 shadow-xl shadow-sky-200 animate-in zoom-in duration-500">
               <Pill size={32} />
             </div>
             <h1 className="text-3xl font-black text-slate-800 tracking-tight">Tome agora!</h1>
@@ -73,7 +73,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                     required
                     type="email"
                     placeholder="exemplo@email.com"
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-3xl outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-[16px] outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                   />
@@ -83,7 +83,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               <button
                 disabled={isLoading}
                 type="submit"
-                className="w-full py-4 bg-slate-900 text-white rounded-3xl font-bold text-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
+                className="w-full py-4 bg-slate-900 text-white rounded-[16px] font-bold text-lg hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group disabled:opacity-50"
               >
                 {isLoading ? (
                   <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -111,7 +111,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                     type="text"
                     maxLength={6}
                     placeholder="000000"
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-3xl outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all text-center text-2xl tracking-[0.5em] font-black"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-[16px] outline-none focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 transition-all text-center text-2xl tracking-[0.5em] font-black"
                     value={otp}
                     onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
                   />
@@ -142,7 +142,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                 </div>
               </div>
 
-              <div className="p-4 bg-sky-50 rounded-2xl border border-sky-100">
+              <div className="p-4 bg-sky-50 rounded-[16px] border border-sky-100">
                 <p className="text-[11px] text-sky-700 font-medium leading-relaxed">
                   <strong>Nota da Demo:</strong> Como esta é uma versão de visualização, o e-mail não é enviado de fato. <br/>
                   <span className="font-bold">Dica: Digite qualquer código de 6 dígitos para entrar.</span>
@@ -152,7 +152,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               <button
                 disabled={isLoading || otp.length < 6}
                 type="submit"
-                className="w-full py-4 bg-sky-600 text-white rounded-3xl font-bold text-lg hover:bg-sky-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-sky-100"
+                className="w-full py-4 bg-sky-600 text-white rounded-[16px] font-bold text-lg hover:bg-sky-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-sky-100"
               >
                 {isLoading ? (
                   <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

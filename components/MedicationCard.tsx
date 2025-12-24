@@ -41,7 +41,7 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medication, onTake, onD
   const isLate = percentage <= 0 && !isTaken;
 
   return (
-    <div className={`bg-white rounded-[32px] p-6 shadow-sm border transition-all duration-500 flex flex-col h-full ${
+    <div className={`bg-white rounded-[16px] p-6 shadow-sm border transition-all duration-500 flex flex-col h-full ${
       isTaken ? 'bg-slate-50/40 border-green-100 opacity-90' : 
       isLate ? 'border-red-100 bg-red-50/30' : 'border-slate-100 hover:shadow-md'
     }`}>
@@ -88,7 +88,7 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medication, onTake, onD
           </div>
         )}
         {medication.notes && (
-          <div className="mb-4 p-3 bg-white/50 rounded-2xl flex gap-2 items-start border border-slate-100/50">
+          <div className="mb-4 p-3 bg-white/50 rounded-[16px] flex gap-2 items-start border border-slate-100/50">
             <StickyNote size={14} className="text-slate-300 mt-0.5 shrink-0" />
             <p className="text-xs text-slate-500 italic leading-snug line-clamp-3">{medication.notes}</p>
           </div>
@@ -99,14 +99,14 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medication, onTake, onD
         <div className="flex items-center gap-1">
           <button 
             onClick={() => onEdit(medication)}
-            className="p-2 text-slate-300 hover:text-sky-500 hover:bg-sky-50 rounded-xl transition-all"
+            className="p-2 text-slate-300 hover:text-sky-500 hover:bg-sky-50 rounded-[16px] transition-all"
             title="Editar"
           >
             <Edit3 size={18} />
           </button>
           <button 
             onClick={() => onDelete(medication.id)}
-            className="p-2 text-slate-300 hover:text-red-400 hover:bg-red-50 rounded-xl transition-all"
+            className="p-2 text-slate-300 hover:text-red-400 hover:bg-red-50 rounded-[16px] transition-all"
             title="Excluir"
           >
             <Trash2 size={18} />
@@ -116,7 +116,7 @@ const MedicationCard: React.FC<MedicationCardProps> = ({ medication, onTake, onD
         <button
           onClick={() => onTake(medication.id)}
           disabled={isTaken}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm transition-all duration-300 ${
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-[16px] font-bold text-sm transition-all duration-300 ${
             isTaken 
               ? 'bg-green-500 text-white cursor-default shadow-lg shadow-green-100/50' 
               : isLate 

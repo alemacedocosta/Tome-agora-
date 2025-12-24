@@ -39,7 +39,7 @@ const MedicationModal: React.FC<MedicationModalProps> = ({ onClose, onSave, init
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-md rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+      <div className="bg-white w-full max-w-md rounded-[16px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-6 flex justify-between items-center border-b border-slate-100">
           <h2 className="text-2xl font-bold text-slate-800">
             {isEditing ? 'Editar Remédio' : 'Novo Remédio'}
@@ -56,7 +56,7 @@ const MedicationModal: React.FC<MedicationModalProps> = ({ onClose, onSave, init
               required
               type="text"
               placeholder="Ex: Amoxicilina"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[16px] focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none transition-all"
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
             />
@@ -68,7 +68,7 @@ const MedicationModal: React.FC<MedicationModalProps> = ({ onClose, onSave, init
               <input
                 required
                 type="time"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-500 outline-none"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[16px] focus:ring-2 focus:ring-sky-500 outline-none"
                 value={formData.dosage_time}
                 onChange={e => setFormData({ ...formData, dosage_time: e.target.value })}
               />
@@ -80,7 +80,7 @@ const MedicationModal: React.FC<MedicationModalProps> = ({ onClose, onSave, init
                 type="number"
                 min="1"
                 max="168"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-500 outline-none"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[16px] focus:ring-2 focus:ring-sky-500 outline-none"
                 value={formData.periodicity_hours}
                 onChange={e => setFormData({ ...formData, periodicity_hours: parseInt(e.target.value) })}
               />
@@ -95,7 +95,7 @@ const MedicationModal: React.FC<MedicationModalProps> = ({ onClose, onSave, init
                   key={cat}
                   type="button"
                   onClick={() => setFormData({ ...formData, category: cat })}
-                  className={`flex-1 py-3 px-4 rounded-2xl border font-medium transition-all ${
+                  className={`flex-1 py-3 px-4 rounded-[16px] border font-medium transition-all ${
                     formData.category === cat
                       ? 'bg-sky-50 border-sky-200 text-sky-700 ring-2 ring-sky-500 ring-offset-1'
                       : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
@@ -111,7 +111,7 @@ const MedicationModal: React.FC<MedicationModalProps> = ({ onClose, onSave, init
             <label className="block text-sm font-semibold text-slate-700 mb-1.5">Anotações Livres</label>
             <textarea
               placeholder="Ex: Tomar após as refeições"
-              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-sky-500 outline-none h-24 resize-none"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-[16px] focus:ring-2 focus:ring-sky-500 outline-none h-24 resize-none"
               value={formData.notes}
               onChange={e => setFormData({ ...formData, notes: e.target.value })}
             />
@@ -119,7 +119,7 @@ const MedicationModal: React.FC<MedicationModalProps> = ({ onClose, onSave, init
 
           <button
             type="submit"
-            className="w-full py-4 bg-sky-600 text-white rounded-2xl font-bold text-lg hover:bg-sky-700 shadow-xl shadow-sky-200 active:scale-[0.98] transition-all"
+            className="w-full py-4 bg-sky-600 text-white rounded-[16px] font-bold text-lg hover:bg-sky-700 shadow-xl shadow-sky-200 active:scale-[0.98] transition-all"
           >
             {isEditing ? 'Salvar Alterações' : 'Adicionar à Lista'}
           </button>
