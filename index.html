@@ -9,6 +9,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <script>
+      // Garante que a aplicação não quebre se process.env não estiver definido pelo bundler
+      if (typeof window.process === 'undefined') {
+        window.process = { env: {} };
+      }
+    </script>
     <style>
         * {
             font-family: 'Inter', sans-serif !important;
@@ -18,7 +24,6 @@
             -moz-osx-font-smoothing: grayscale;
             letter-spacing: -0.011em;
         }
-        /* Ajuste de kerning para pesos maiores (estética atual) */
         .font-black, .font-extrabold, .font-bold {
             letter-spacing: -0.022em;
         }
@@ -30,7 +35,8 @@
     "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.7"
   }
 }
 </script>
