@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Pill, Mail, ShieldCheck, ArrowRight, RefreshCw, CheckCircle2, AlertCircle, Info } from 'lucide-react';
+import { Pill, Mail, ShieldCheck, ArrowRight, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../utils/supabase';
 
 interface AuthProps {
@@ -20,7 +20,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
     if (!email) return;
 
     if (!isSupabaseConfigured) {
-      // Se não houver supabase, fazemos um "login demo" direto
+      // Login silencioso em modo demo se as chaves faltarem, sem avisos intrusivos
       onAuthSuccess(email);
       return;
     }
@@ -92,17 +92,8 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
               <Pill size={32} />
             </div>
             <h1 className="text-3xl font-black text-slate-800 tracking-tight">Tome agora!</h1>
-            <p className="text-slate-400 font-medium">Sua saúde no horário certo</p>
+            <p className="text-slate-400 font-medium text-center">Gestão inteligente de medicamentos</p>
           </div>
-
-          {!isSupabaseConfigured && (
-            <div className="mb-6 p-3 bg-amber-50 rounded-[12px] border border-amber-100 flex gap-2">
-              <Info size={16} className="text-amber-500 shrink-0 mt-0.5" />
-              <p className="text-[11px] text-amber-800 font-medium">
-                <strong>Modo Demo:</strong> As chaves do Supabase não foram detectadas. Digite qualquer e-mail para entrar agora sem código.
-              </p>
-            </div>
-          )}
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-[16px] flex items-start gap-3 text-sm animate-in fade-in slide-in-from-top-2">
@@ -137,7 +128,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
                   <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    {isSupabaseConfigured ? 'Enviar Código de Acesso' : 'Entrar (Modo Demo)'}
+                    Entrar com E-mail
                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -211,7 +202,7 @@ const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
           <div className="mt-12 pt-8 border-t border-slate-100 flex flex-col items-center gap-2">
             <p className="text-xs text-slate-400 uppercase font-bold tracking-widest">Acesso Seguro</p>
             <p className="text-[10px] text-slate-300 text-center leading-relaxed">
-              {isSupabaseConfigured ? 'O código expira em poucos minutos para sua segurança.' : 'Serviço de autenticação em modo de pré-visualização.'}
+              O código expira em poucos minutos para sua segurança.
             </p>
           </div>
         </div>

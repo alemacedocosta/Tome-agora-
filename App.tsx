@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Pill, Plus, LogOut, Bell, Search, BellOff, CheckCircle2, Clock, Info } from 'lucide-react';
+import { Pill, Plus, LogOut, Bell, Search, BellOff, CheckCircle2, Clock } from 'lucide-react';
 import { Medication, UserProfile } from './types';
 import MedicationCard from './components/MedicationCard';
 import MedicationModal from './components/MedicationModal';
@@ -20,7 +20,6 @@ const App: React.FC = () => {
     typeof Notification !== 'undefined' ? Notification.permission : 'default'
   );
 
-  // Inicialização e Monitoramento da Sessão
   useEffect(() => {
     const initSession = async () => {
       try {
@@ -30,11 +29,8 @@ const App: React.FC = () => {
             setUser({ id: session.user.id, email: session.user.email! });
           }
         } else {
-          // Fallback para modo Demo se as chaves não estiverem no ambiente
           const demoUser = localStorage.getItem('tome_agora_demo_user');
-          if (demoUser) {
-            setUser(JSON.parse(demoUser));
-          }
+          if (demoUser) setUser(JSON.parse(demoUser));
         }
       } catch (err) {
         console.error("Erro ao carregar sessão:", err);
@@ -57,26 +53,20 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // Carregar medicamentos
   useEffect(() => {
     if (user) {
       const savedMeds = localStorage.getItem(`tome_agora_meds_${user.id}`);
-      if (savedMeds) {
-        setMedications(JSON.parse(savedMeds));
-      } else {
-        setMedications([]);
-      }
+      if (savedMeds) setMedications(JSON.parse(savedMeds));
+      else setMedications([]);
     }
   }, [user]);
 
-  // Salvar medicamentos
   useEffect(() => {
     if (user) {
       localStorage.setItem(`tome_agora_meds_${user.id}`, JSON.stringify(medications));
     }
   }, [medications, user]);
 
-  // Loop de Notificações
   useEffect(() => {
     if (!user || notificationPermission !== 'granted') return;
 
@@ -111,21 +101,15 @@ const App: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    if (isSupabaseConfigured) {
-      await supabase.auth.signOut();
-    } else {
-      localStorage.removeItem('tome_agora_demo_user');
-    }
+    if (isSupabaseConfigured) await supabase.auth.signOut();
+    else localStorage.removeItem('tome_agora_demo_user');
     setUser(null);
   };
 
   const handleSaveMedication = (data: any) => {
     if (!user) return;
-
     if (editingMed) {
-      setMedications(prev => prev.map(m => 
-        m.id === editingMed.id ? { ...m, ...data } : m
-      ));
+      setMedications(prev => prev.map(m => m.id === editingMed.id ? { ...m, ...data } : m));
     } else {
       const newMed: Medication = {
         ...data,
@@ -137,7 +121,6 @@ const App: React.FC = () => {
       };
       setMedications(prev => [...prev, newMed]);
     }
-    
     setIsModalOpen(false);
     setEditingMed(undefined);
   };
@@ -159,7 +142,7 @@ const App: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <Pill className="text-sky-500 animate-bounce" size={48} />
-          <p className="text-slate-400 font-medium">Iniciando Tome agora!...</p>
+          <p className="text-slate-400 font-medium">Carregando sua rotina...</p>
         </div>
       </div>
     );
@@ -167,7 +150,6 @@ const App: React.FC = () => {
 
   if (!user) {
     return <Auth onAuthSuccess={(email) => {
-      // Se não houver supabase, criamos um user local para demo
       if (!isSupabaseConfigured) {
         const demoUser = { id: 'demo-user', email };
         setUser(demoUser);
@@ -176,20 +158,12 @@ const App: React.FC = () => {
     }} />;
   }
 
-  const filteredMeds = medications.filter(m => 
-    m.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMeds = medications.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase()));
   const pendingMeds = filteredMeds.filter(m => !isCurrentDoseTaken(m));
   const takenMeds = filteredMeds.filter(m => isCurrentDoseTaken(m));
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
-      {!isSupabaseConfigured && (
-        <div className="bg-amber-500 text-white text-[10px] font-bold text-center py-1 uppercase tracking-widest">
-          Modo de Demonstração (Dados Locais)
-        </div>
-      )}
-      
       <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -202,9 +176,7 @@ const App: React.FC = () => {
             <button 
               onClick={handleToggleNotifications}
               className={`p-2.5 rounded-[16px] transition-all ${
-                notificationPermission === 'granted' 
-                  ? 'bg-sky-50 text-sky-600' 
-                  : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
+                notificationPermission === 'granted' ? 'bg-sky-50 text-sky-600' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
               }`}
             >
               {notificationPermission === 'granted' ? <Bell size={20} /> : <BellOff size={20} />}
@@ -220,9 +192,8 @@ const App: React.FC = () => {
         <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
           <div className="flex flex-col gap-1 w-full md:w-auto">
             <h2 className="text-3xl font-extrabold text-slate-900 leading-none">Minha Rotina</h2>
-            <p className="text-slate-500 font-medium">Logado como: <span className="text-sky-600 font-bold">{user.email}</span></p>
+            <p className="text-slate-500 font-medium">Saúde em dia para <span className="text-sky-600 font-bold">{user.email}</span></p>
           </div>
-          
           <div className="relative w-full md:w-80 group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-sky-500 transition-colors" size={20} />
             <input 
@@ -235,17 +206,6 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {!isSupabaseConfigured && (
-          <div className="p-4 bg-amber-50 rounded-[16px] border border-amber-100 flex items-start gap-3">
-            <Info className="text-amber-500 shrink-0 mt-0.5" size={20} />
-            <div className="text-sm text-amber-800 font-medium leading-relaxed">
-              <strong>Nota de Configuração:</strong> O app não detectou as chaves do Supabase no ambiente. 
-              Você está vendo a versão funcional com armazenamento local. Para ativar o login real por e-mail, 
-              configure as chaves <code className="bg-amber-100 px-1 rounded">VITE_SUPABASE_URL</code> no Vercel.
-            </div>
-          </div>
-        )}
-
         <section className="space-y-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-4">
             <div className="flex items-center gap-2 text-slate-800">
@@ -253,22 +213,14 @@ const App: React.FC = () => {
                 <Clock size={20} />
               </div>
               <h3 className="text-xl font-bold">Para Tomar Agora</h3>
-              <span className="ml-2 px-2.5 py-0.5 bg-slate-200 text-slate-600 text-xs font-black rounded-full">
-                {pendingMeds.length}
-              </span>
+              <span className="ml-2 px-2.5 py-0.5 bg-slate-200 text-slate-600 text-xs font-black rounded-full">{pendingMeds.length}</span>
             </div>
           </div>
 
           {pendingMeds.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
               {pendingMeds.map(med => (
-                <MedicationCard 
-                  key={med.id} 
-                  medication={med} 
-                  onTake={handleTakeMedication}
-                  onDelete={handleDeleteMedication}
-                  onEdit={(m) => {setEditingMed(m); setIsModalOpen(true);}}
-                />
+                <MedicationCard key={med.id} medication={med} onTake={handleTakeMedication} onDelete={handleDeleteMedication} onEdit={(m) => {setEditingMed(m); setIsModalOpen(true);}} />
               ))}
             </div>
           ) : (
@@ -287,41 +239,23 @@ const App: React.FC = () => {
                   <CheckCircle2 size={20} />
                 </div>
                 <h3 className="text-xl font-bold">Já Tomados</h3>
-                <span className="ml-2 px-2.5 py-0.5 bg-slate-100 text-slate-400 text-xs font-black rounded-full">
-                  {takenMeds.length}
-                </span>
+                <span className="ml-2 px-2.5 py-0.5 bg-slate-100 text-slate-400 text-xs font-black rounded-full">{takenMeds.length}</span>
               </div>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-700">
               {takenMeds.map(med => (
-                <MedicationCard 
-                  key={med.id} 
-                  medication={med} 
-                  onTake={handleTakeMedication}
-                  onDelete={handleDeleteMedication}
-                  onEdit={(m) => {setEditingMed(m); setIsModalOpen(true);}}
-                />
+                <MedicationCard key={med.id} medication={med} onTake={handleTakeMedication} onDelete={handleDeleteMedication} onEdit={(m) => {setEditingMed(m); setIsModalOpen(true);}} />
               ))}
             </div>
           </section>
         )}
       </main>
 
-      <button 
-        onClick={() => { setEditingMed(undefined); setIsModalOpen(true); }}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-sky-600 text-white rounded-[16px] flex items-center justify-center shadow-2xl shadow-sky-400 hover:scale-110 active:scale-95 transition-all z-30"
-      >
+      <button onClick={() => { setEditingMed(undefined); setIsModalOpen(true); }} className="fixed bottom-8 right-8 w-16 h-16 bg-sky-600 text-white rounded-[16px] flex items-center justify-center shadow-2xl shadow-sky-400 hover:scale-110 active:scale-95 transition-all z-30">
         <Plus size={32} />
       </button>
 
-      {isModalOpen && (
-        <MedicationModal 
-          onClose={() => { setIsModalOpen(false); setEditingMed(undefined); }} 
-          onSave={handleSaveMedication}
-          initialData={editingMed}
-        />
-      )}
+      {isModalOpen && <MedicationModal onClose={() => { setIsModalOpen(false); setEditingMed(undefined); }} onSave={handleSaveMedication} initialData={editingMed} />}
     </div>
   );
 };

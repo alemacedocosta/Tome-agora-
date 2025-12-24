@@ -1,22 +1,23 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Função auxiliar para buscar variáveis em diferentes contextos de ambiente
 const getEnv = (key: string): string => {
-  // 1. Tenta no import.meta.env (Padrão Vite)
-  const metaEnv = (import.meta as any).env;
-  if (metaEnv && metaEnv[key]) return metaEnv[key];
+  // Prioridade 1: import.meta.env (Vite)
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    const val = (import.meta as any).env[key];
+    if (val) return val;
+  }
   
-  // 2. Tenta no process.env (Padrão Vercel/Node/CI)
+  // Prioridade 2: process.env (Ambientes Node/SSR/Vercel build)
   if (typeof process !== 'undefined' && process.env && process.env[key]) {
     return process.env[key] as string;
   }
 
-  // 3. Tenta variações comuns sem o prefixo VITE_ (muitas vezes configuradas assim no Vercel)
+  // Prioridade 3: Fallback sem prefixo VITE_ (comum em setups manuais no Vercel)
   const fallbackKey = key.replace('VITE_', '');
-  if (metaEnv && metaEnv[fallbackKey]) return metaEnv[fallbackKey];
-  if (typeof process !== 'undefined' && process.env && process.env[fallbackKey]) {
-    return process.env[fallbackKey] as string;
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    const val = (import.meta as any).env[fallbackKey];
+    if (val) return val;
   }
 
   return '';
@@ -25,7 +26,12 @@ const getEnv = (key: string): string => {
 const supabaseUrl = getEnv('VITE_SUPABASE_URL');
 const supabaseAnonKey = getEnv('VITE_SUPABASE_ANON_KEY');
 
-export const isSupabaseConfigured = supabaseUrl.length > 0 && supabaseAnonKey.length > 0;
+// Só consideramos configurado se ambas as chaves tiverem valores válidos (não strings vazias ou placeholders)
+export const isSupabaseConfigured = 
+  supabaseUrl && 
+  supabaseAnonKey && 
+  supabaseUrl.startsWith('http') &&
+  supabaseUrl.length > 20;
 
 export const supabase = isSupabaseConfigured 
   ? createClient(supabaseUrl, supabaseAnonKey)
